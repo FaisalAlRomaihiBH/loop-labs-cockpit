@@ -77,6 +77,27 @@ def init_db() -> None:
         conn.close()
 
 
+def mark_orphaned_runs() -> int:
+    """Close out runs left in 'running' by a cockpit crash or restart.
+
+    Called at startup: any row still 'running' belongs to a process that no
+    longer exists, so the honest status is failed. Returns how many were
+    closed so the caller can log it.
+    """
+    conn = _connect()
+    try:
+        cur = conn.execute(
+            "UPDATE runs SET status = 'failed', ended = ?, "
+            "error = 'orphaned: cockpit stopped mid-run' "
+            "WHERE status = 'running'",
+            (_now(),),
+        )
+        conn.commit()
+        return cur.rowcount
+    finally:
+        conn.close()
+
+
 def create_session(agent: str, founder: str | None) -> int:
     conn = _connect()
     try:

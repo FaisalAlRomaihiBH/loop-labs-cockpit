@@ -48,6 +48,11 @@ def _now() -> str:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db.init_db()
+    orphaned = db.mark_orphaned_runs()
+    if orphaned:
+        logging.getLogger("cockpit").warning(
+            "closed %s run(s) orphaned by the previous shutdown", orphaned
+        )
     yield
     await agents.shutdown()
 

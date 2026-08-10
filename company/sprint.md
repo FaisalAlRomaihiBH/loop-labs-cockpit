@@ -1,6 +1,8 @@
-# Sprint State and Proposed Milestone Breakdown
+# Sprint State and Approved Milestone Breakdown
 
-**Status: the milestone breakdown below is PROPOSED, not approved.** Presented to the founders 2026-08-10. No sprint is running. The weekly founder review is Saturdays at 10:00 Bahrain time; the first sprint plan goes there.
+**Status: APPROVED by Hasan, on behalf of both founders, 2026-08-10.** The shape and ordering are approved; the *contents* of M6 onward are explicitly not, and will change as the pilot teaches us things. M4 (payroll and commission) approved including its self-imposed limit. Security pulled forward into M3 approved.
+
+No sprint is running yet. The weekly founder review is Saturdays at 10:00 Bahrain time; **M1 goes there as the first sprint plan.**
 
 **In flight right now:** Architect run 16, the ownership map, delivered to `company/reports/2026-08-10-architect-run16.md`. Awaiting CEO review then founder approval. Nothing else is running.
 
@@ -68,6 +70,28 @@ This is the real validation and the genuine decision point. If businesses do not
 
 Exit: we know whether they use it daily, and whether they would pay.
 
+### Positioning at onboarding — founding member, not free (founder directive, 2026-08-10)
+
+**These businesses run without charge because billing does not exist yet, not because we are giving anything away.** Hasan's instruction: set that expectation explicitly at onboarding — a founding-member arrangement, price coming, terms agreed later. Businesses that receive something free for months resist paying for it afterwards, and that would be a self-inflicted problem at exactly the moment we need conversion evidence.
+
+Practical consequence: the provisional price should be stated to pilot businesses *during* onboarding, not after the pilot. They should agree in principle to a number before they have months of free use behind them. This also makes M5 a real willingness-to-pay test rather than a usage test with a pricing conversation bolted on later.
+
+### What failure looks like — written before the pilot, not after
+
+**Founder directive, 2026-08-10 (Hasan):** a decision point whose criteria are set afterwards gets rationalised into a pass. So these are fixed now. **Thresholds marked provisional are to be confirmed with Hasan before the pilot starts** — he is the domain authority on what normal job volume and staffing look like, and I should not invent numbers he can supply.
+
+**The primary metric is logging completeness, not logins.** Jobs logged in Loop Labs as a fraction of jobs the business actually performed in the same period. Incomplete logging is the failure that matters, because the insights they pay for are worthless on partial data — and this is the number that tells us whether the employee app works in the hands of the actual workforce. Provisional bar: sustained above 80% by week three, measured against the owner's own count.
+
+**Failure mode one — they use it for two weeks and then stop.** Meaning: the tooling is not load-bearing in their day, and they reverted to manual because the app costs more effort than it saves. This is the most serious of the three because it invalidates the SaaS-first premise itself, not the pricing. Response: **do not build the marketplace on top of it.** Diagnose which side broke — the employee app (logging burden falling on staff who cannot or will not do it) or the owner side (dashboard showing nothing they did not already know). Fix or narrow before proceeding to M6.
+
+**Failure mode two — they use it daily but say they would not pay.** Meaning: real utility, wrong price or wrong package. Materially less serious than mode one, because the product works and the commercial construction does not. Response: establish the number they *would* pay. If that number cannot support the business, the fault is in the packaging — likely that value needs concentrating into commission calculation and insights rather than spread thinly across a base fee.
+
+**Failure mode three — they ask for something we have not built.** Meaning depends entirely on what. If it is already later in the plan, that is confirmation of the sequence and costs nothing. If it is not in the plan at all and is blocking their adoption, that is a specification gap and **the most valuable finding of the three** — it is cheaper to learn now than after the marketplace is built on the wrong base.
+
+**A fourth mode I am adding, because it is the one that hides.** The owner back-filling job records themselves at the end of the day, while employees do not use the app. That reads as healthy usage in every metric and is actually a failure: it means the employee app did not work, the data is retrospective and unverified rather than GPS-and-photo verified, and the payroll case collapses because there is nothing for staff to trust. **Detection: check whether job records are created near the job's actual time and from the employee's device, not merely that they exist.**
+
+**What a pass looks like.** Logging completeness sustained past week four without founder prompting; employees logging their own jobs rather than the owner back-filling; the owner referring to the revenue or staff view unprompted; and agreement in principle to the provisional price. All four, not three of four.
+
 ## M6 — Insights v1
 
 Cannot precede the pilot, because it needs weeks of real data. Private insights on the business's own data: staff performance, demand, revenue, retention. Money and staff first. Speed metrics withheld until quality signals exist. Export as PDF and spreadsheet. Insights link to the action that fixes them.
@@ -92,7 +116,7 @@ Organisation added across these: CTO when four or more technical agents run in p
 
 ## Deliberate deviation from the charter's waves
 
-The charter puts Security in the third wave. **I propose pulling it forward to M3.** M3 is where employee personal data, photographs, GPS-verified job status and consent records first appear, and PDPL applies from the first record rather than from launch. Security is a blocking gate on exactly that surface, and retrofitting it after the data model is settled is the expensive order.
+The charter puts Security in the third wave. **Pulled forward to M3 — approved 2026-08-10.** M3 is where employee personal data, photographs, GPS-verified job status and consent records first appear, and PDPL applies from the first record rather than from launch. Security is a blocking gate on exactly that surface, and retrofitting it after the data model is settled is the expensive order.
 
 ## Tensions I am not resolving quietly
 
@@ -104,8 +128,10 @@ Wallet licensing remains the highest-consequence open item. Building it is a fou
 
 The marketing add-on is genuinely undefined. Nothing here depends on it.
 
-## What I recommend approving
+## What was approved, and what was not
 
-Approve the shape and the ordering, not the contents of M6 onward — those will change as we learn from the pilot, and pretending otherwise would be false precision.
+**Approved 2026-08-10:** the shape and the ordering. M4 including its constraint. Security into M3.
 
-Then M1 as the first sprint at the Saturday review.
+**Deliberately not approved:** the contents of M6 onward. Those will change as we learn from the pilot, and treating them as settled would be false precision. Re-propose them after M5, not before.
+
+**Next:** M1 as the first sprint plan, at the Saturday review.

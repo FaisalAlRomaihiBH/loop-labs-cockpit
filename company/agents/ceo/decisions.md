@@ -4,6 +4,36 @@ Append-only. Every decision the CEO makes, with its reasoning and date, recorded
 
 ---
 
+## 2026-08-10 — MILESTONE BREAKDOWN APPROVED (M1–M8), with two additions
+
+**Made by.** Hasan, on behalf of both founders. This is the venture's first approved plan. Full text lives in `company/sprint.md` (loaded every session).
+
+**Approved:** the shape and the ordering. **M4 payroll and commission** — the CEO's own addition, not a stage in the technical plan — approved *including the limit the CEO placed on itself*. **Security pulled forward from the charter's third wave into M3** approved, with the founders noting that flagging it as a deliberate deviation rather than doing it quietly was the right way to handle it.
+
+**Explicitly not approved: the contents of M6 onward.** The shape only. Re-propose contents after the pilot.
+
+**Addition 1 — M5 pilot failure criteria, written before the pilot rather than after.** Founder reasoning, recorded because it generalises: *a decision point whose criteria are set afterwards tends to get rationalised into a pass.* Hasan named three failure modes and asked what each means; I defined them, added a fourth (owner back-filling job records while employees do not use the app — it reads as healthy usage in every metric and is actually a failure), and set logging completeness rather than logins as the primary metric. Thresholds marked provisional pending Hasan's numbers, since he is the domain authority on real job volume. Written into `sprint.md`.
+
+**Addition 2 — the pilot is a founding-member arrangement, not free.** Those businesses run without charge because billing does not exist, not because we are giving anything away. Set that expectation explicitly at onboarding: price coming, terms agreed later. Founder reasoning: businesses that receive something free for months resist paying afterwards, and that would be self-inflicted at exactly the moment we need conversion evidence. **Consequence I drew from it:** the provisional price should be stated during onboarding, before months of free use accumulate — which turns M5 into a genuine willingness-to-pay test rather than a usage test with a pricing conversation bolted on later.
+
+**Markdown rendering in the cockpit message panel — option one approved.** Faisal to implement. Reasoning accepted as the CEO argued it: the payback is every message from now on, indefinitely, and dense structure like a milestone plan or a diff summary is genuinely easier to read as a table than as prose.
+
+**Status.** Active. M1 is the first sprint plan and goes to the Saturday review.
+
+---
+
+## 2026-08-10 — Generalised founder directives from the approval message
+
+Recorded separately from the plan because they govern all future work, not just this plan.
+
+**Where a feature has regulatory exposure, ship the part that helps and hold the part that creates liability.** Founder-generalised from the M4 constraint (calculate and display commission, never file or pay, until the payroll advisor has spoken). Explicitly asked for as a *pattern to apply generally*, not a one-off. This is the operating answer to the four unresolved advisor items: build up to the liability line and stop there, rather than either waiting for advice or building through it.
+
+**Set the criteria for a decision point before the test, not after.** See M5 above. Applies to every future validation, pilot, benchmark, or gate.
+
+**Verify how the system actually behaves before designing around it.** Founders endorsed checking what a fresh session loads rather than assuming, and moving the founding understanding into a loaded file as the right response. Already in the playbook; reinforced here as founder-stated.
+
+**Founders will test recall next session** — a question about something the CEO should know and should not need to look up. Not a threat; it is the divergence check from spec §44 working as designed.
+
 ## 2026-08-10 — Weekly founder review fixed to Saturdays, 10:00 Bahrain time
 
 **Decision.** The weekly founder review is held every Saturday at 10:00 Bahrain time (UTC+3). Sprint plans are approved or rejected in that meeting.

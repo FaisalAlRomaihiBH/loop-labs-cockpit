@@ -22,18 +22,14 @@ Consequence: the competitor teardown the founders asked for cannot be run by me 
 
 Needs a founder decision: add web tools to the CEO, wait and give them to a research-capable agent later, or the founders run the teardown themselves.
 
-### Architect brief — awaiting approval (raised 2026-08-10)
+### Hasan's provisional numbers for the M5 pilot criteria (raised 2026-08-10)
 
-Drafted at `company/agents/architect/brief.md`, version 1.0. Adding a role is a hard stop; nothing activates without founder approval.
+The pilot failure criteria are written into `sprint.md` as approved, but two thresholds are mine rather than his and he is the domain authority:
 
-### Confirmation sought on two answers (raised 2026-08-10)
+- Typical daily job volume for a business of the size we are piloting with, so "logging completeness" has a real denominator.
+- Whether 80% logging completeness by week three is a sensible bar or a naive one.
 
-Hasan's answer message opened with a note that the registration and advisor items stated what was true "when we last discussed it". Both are calendar-time items where a stale answer costs weeks rather than hours, so:
-
-- **Company registration** — still not started, jurisdiction still undecided?
-- **Advisor conversations** — still none of the four started?
-
-If either has moved, my sequencing changes materially.
+Not urgent — needed before the pilot starts, which is several milestones away. Do not let it hold up M1.
 
 ### Genuinely blocked, not awaiting a decision
 
@@ -42,6 +38,10 @@ If either has moved, my sequencing changes materially.
 ---
 
 ## Answered
+
+**2026-08-10 — the milestone breakdown.** Approved by Hasan: shape and ordering, M4 with its constraint, Security into M3. Contents of M6 onward deliberately not approved. Two founder additions (M5 failure criteria, founding-member positioning) implemented in `sprint.md`. See `decisions.md`.
+
+**2026-08-10 — Architect brief and markdown rendering.** Brief approved and the Architect activated (run 16). Markdown rendering approved, option one, Faisal implementing. Registration and advisors confirmed unchanged — still not started, jurisdiction still open.
 
 **2026-08-10 — permissions and tooling.** All three granted (brief writes, own reports, `Edit`), memory structure Option B approved. See `decisions.md`.
 
