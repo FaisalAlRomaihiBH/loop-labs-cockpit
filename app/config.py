@@ -24,9 +24,12 @@ MODELS = {"ceo": "claude-opus-5", "default": "claude-sonnet-4-6"}
 
 # Per-agent tool allow-lists. CEO's full v1 set also includes assign_task
 # (added at Step 6) — that arrives via mcp_servers, not this list, since
-# `tools` only gates the built-in tool set. No Bash, no Edit — per the build
-# package, permissions are the enforcement layer, not instructions.
-TOOLS = {"ceo": ["Read", "Glob", "Grep", "Write"]}
+# `tools` only gates the built-in tool set. No Bash. Edit for the CEO is a
+# deliberate, founder-approved (2026-08-10) deviation from the build
+# package's "no Edit": Write-only meant rewriting whole memory files to
+# change one line, a real content-loss risk. Edit obeys the same
+# write-path guard as Write.
+TOOLS = {"ceo": ["Read", "Glob", "Grep", "Write", "Edit"]}
 # Default allow-list for assigned agents that don't have their own entry
 # above (e.g. the throwaway test agent). Same shape as the CEO's for now —
 # read broadly, write only within the paths its guard allows.
@@ -38,6 +41,14 @@ CEO_WRITE_PATHS = [
     COMPANY_DIR / "agents" / "ceo",   # its own memory (and the charter flag)
     COMPANY_DIR / "sprint.md",
     COMPANY_DIR / "backlog.md",
+]
+
+# Founder-approved 2026-08-10: glob-scoped write grants beyond the roots
+# above. Briefs so the CEO can build the organisation (moves to HR when HR
+# exists); reports limited to the CEO's own by filename convention.
+CEO_WRITE_GLOBS = [
+    str(COMPANY_DIR / "agents" / "*" / "brief.md"),
+    str(COMPANY_DIR / "reports" / "*-ceo-*.md"),
 ]
 
 PLAYBOOK_WORD_CAP = 2000

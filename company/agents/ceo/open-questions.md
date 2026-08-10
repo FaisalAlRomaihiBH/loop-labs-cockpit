@@ -8,10 +8,12 @@ What is waiting on a founder decision, and since when. Removed once answered —
 
 ## Asked 2026-08-10 — first founder session, awaiting answers
 
-**Permissions and tooling** (Faisal: "under consideration", 2026-08-10)
-1. Write access to `company/agents/*/brief.md` — without it I cannot draft briefs, which means I cannot build the organisation. This is the single blocker on the company existing. Should move to HR once HR exists.
-2. Write access to `company/reports/` — my own reports only.
-3. An `Edit` tool scoped to my existing paths. `Write` overwrites whole files; correcting one playbook line means reproducing all of it.
+**Permissions and tooling** — **ANSWERED 2026-08-10 by Faisal. All three granted.** Memory structure Option B approved. Details in `decisions.md`; scope rule in `playbook.md`. Items 1–3 closed. The blocker on building the organisation is cleared.
+1. ~~Write access to `company/agents/*/brief.md`~~ — granted, briefs only, moves to HR when HR exists.
+2. ~~Write access to `company/reports/`~~ — granted, scoped by filename to `*-ceo-*.md`.
+3. ~~An `Edit` tool~~ — granted, same path guard as `Write`.
+
+*Note: item 5 below is now the gating question for the next construction step. With write access in hand, the Architect's brief is drafted as soon as the shadow-period question is settled.*
 
 **Sequencing and strategy**
 4. Do we put the business tooling in front of paying businesses before the customer marketplace exists? Biggest sequencing question in the venture; changes the whole shape of the milestone proposal. Founders' instinct wanted before I build a plan around mine.

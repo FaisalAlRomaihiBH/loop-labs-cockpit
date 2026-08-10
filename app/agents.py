@@ -10,6 +10,7 @@ channel before the first tool call arrives.
 
 import asyncio
 import contextvars
+import fnmatch
 import json
 import logging
 import time
@@ -176,7 +177,9 @@ def _first_user_message(founder: str, content: str, session_id: int) -> str:
 
 
 def make_path_guard(
-    write_paths: list[Path], allow_tool_prefixes: tuple[str, ...] = ()
+    write_paths: list[Path],
+    allow_tool_prefixes: tuple[str, ...] = (),
+    write_globs: list[str] | None = None,
 ) -> Callable[[str, dict, ToolPermissionContext], Awaitable[
     PermissionResultAllow | PermissionResultDeny
 ]]:
@@ -186,9 +189,11 @@ def make_path_guard(
     root. This is the actual enforcement layer — tools=[...] only restricts
     which tools exist at all, not where they may look.
 
-    Reads may range across the allowed roots; writes are confined to
-    `write_paths`, which differ per agent (the CEO's memory and two company
-    files; an assigned agent's own brief directory and the reports dir).
+    Reads may range across the allowed roots; writes (Write and Edit alike)
+    are confined to `write_paths`, which differ per agent (the CEO's memory
+    and two company files; an assigned agent's own brief directory and the
+    reports dir). `write_globs` grants writes to individual files matching a
+    pattern (e.g. any agent's brief.md) without opening the whole directory.
 
     `allow_tool_prefixes` lets MCP tools (e.g. "mcp__cockpit__assign_task")
     through with no path check at all — they take no file-path argument in
@@ -210,9 +215,12 @@ def make_path_guard(
         )
         resolved = Path(raw_path).resolve()
 
-        if tool_name == "Write":
+        if tool_name in ("Write", "Edit"):
             for allowed in write_paths:
                 if resolved == allowed or resolved.is_relative_to(allowed):
+                    return PermissionResultAllow()
+            for pattern in write_globs or []:
+                if fnmatch.fnmatch(str(resolved), pattern):
                     return PermissionResultAllow()
             _log_denied(tool_name, resolved)
             return PermissionResultDeny(
@@ -265,7 +273,7 @@ def _log_tool_blocks(run_id: int, message: AssistantMessage) -> list[str]:
                 path = block.input.get("file_path") or block.input.get("path")
                 if path:
                     db.add_run_log(run_id, "file_read", str(path))
-            elif block.name == "Write":
+            elif block.name in ("Write", "Edit"):
                 path = block.input.get("file_path") or block.input.get("path")
                 if path:
                     db.add_run_log(run_id, "file_write", str(path))
@@ -354,7 +362,9 @@ def _ceo_options() -> ClaudeAgentOptions:
         model=config.MODELS["ceo"],
         tools=config.TOOLS["ceo"],
         can_use_tool=make_path_guard(
-            config.CEO_WRITE_PATHS, allow_tool_prefixes=("mcp__cockpit__",)
+            config.CEO_WRITE_PATHS,
+            allow_tool_prefixes=("mcp__cockpit__",),
+            write_globs=config.CEO_WRITE_GLOBS,
         ),
         include_partial_messages=True,
         cwd=str(config.REPO_ROOT),

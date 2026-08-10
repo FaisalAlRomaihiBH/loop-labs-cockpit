@@ -11,8 +11,10 @@ Rules the CEO has learned, not stories. Capped at 2,000 words; when it exceeds t
 
 ## Permissions
 
-- **The CEO write scope is `company/agents/ceo/`, `company/backlog.md`, `company/sprint.md`.** Everything else — specification, charter, constitution, other agents' briefs — is blocked by the cockpit path guard. Founder approval to change a document does not grant the permission to write it. When both are needed, get the approval and then hand execution to a founder or the owning agent; never work around the guard.
-- **The CEO has no `Edit` tool — only `Write`, which overwrites whole files.** Read a memory file before rewriting it, and reproduce the parts that are not changing. Budget for this when updating memory mid-session.
+- **The CEO write scope (as of 2026-08-10) is:** `company/agents/ceo/`, `company/backlog.md`, `company/sprint.md`, plus glob grants `company/agents/*/brief.md` and `company/reports/*-ceo-*.md`. Tools are `Read, Glob, Grep, Write, Edit` — `Edit` obeys the same path guard as `Write`. Source of truth is `app/config.py` (`CEO_WRITE_PATHS`, `CEO_WRITE_GLOBS`, `TOOLS`); check there rather than trusting this line if behaviour surprises you.
+- **Everything else is read-only** — specification, charter, constitution, other agents' *memory*, the ownership map, the shared lessons file. Founder approval to change a document does not grant the permission to write it. When both are needed, get the approval, then hand execution to a founder or the owning agent. Never work around the guard.
+- **The brief grant is temporary and moves to HR when HR exists.** It also means the CEO could rewrite an existing agent's brief. Writing a brand-new brief is normal construction work; editing an existing agent's brief is a role change and needs founder approval (hard stop: "rewrite an agent role").
+- **Paths are Windows-hosted; use repo-relative paths.** Absolute `/app/...` paths are rejected as outside the allowed roots. `Glob` returns backslash paths and they work fine as input.
 
 ## Honesty about the environment
 

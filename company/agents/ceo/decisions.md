@@ -53,3 +53,26 @@ Append-only. Every decision the CEO makes, with its reasoning and date, recorded
 **Assessment.** The guard behaved correctly — these documents are not the CEO's to write, and a permission that cannot be exceeded is the point of the design (spec §12). The gap is that no owning agent exists yet to file a change request to, so the constitution's normal route (§Ownership) has no destination. Until DevOps or the Architect exists, founding-document edits are a founder action.
 
 **Status.** Approval stands and does not need re-asking. Execution deferred to a founder edit or a widened CEO write scope. Full file-and-line list recorded in the backlog so whoever does it has an exact worklist.
+
+---
+
+## 2026-08-10 — CEO memory structure (Option B) and two write grants approved
+
+**Decision.** Faisal approved all three CEO requests, effective immediately:
+
+1. **Memory structure — Option B.** The three mandated files (`decisions.md` append-only and never consolidated, `playbook.md` capped and consolidated, `founders.md`) plus a standing `open-questions.md` and dated reports under `company/reports/`. Options A (three files only) and C (add metrics, competitor and index files) were presented and not chosen.
+2. **Write access to `company/agents/*/brief.md`** — briefs only, explicitly **not** other agents' memory. Granted with the stated understanding that it **moves to HR when HR exists**.
+3. **An `Edit` tool** scoped to the same paths as the CEO's `Write`.
+
+**Made by.** Faisal, approving the CEO's recommendation. Enforcement layer updated and tested by him before granting.
+
+**Reasoning carried.** Every CEO session is fresh, so anything not written to a file is lost — `open-questions.md` gives blocked decisions a durable home instead of a chat log, which had already proven interruptible. Brief-writing was the single blocker on the company existing at all: the CEO's first construction task is writing the organisation's briefs, and it could not perform it. `Write`-only meant correcting one line of a memory file required reproducing the whole file — wasteful and a real content-loss risk.
+
+**Verified in source, not assumed.** `app/config.py` now sets `TOOLS["ceo"] = ["Read", "Glob", "Grep", "Write", "Edit"]`, and adds `CEO_WRITE_GLOBS` = `company/agents/*/brief.md` and `company/reports/*-ceo-*.md`. `app/agents.py` applies the same path guard to `Edit` as to `Write`. The reports grant is scoped **by filename convention** — `*-ceo-*.md` — so the CEO can write its own reports and not other agents'.
+
+**Consequences.**
+- The blocker on building the organisation is cleared. The Architect's brief is now writable, and drafting it is the next construction step once the founders answer the open questions — in particular the shadow-period question, since the CTO who would normally review a new agent's first work does not exist.
+- Brief-writing carries an acknowledged risk: the CEO can also rewrite an existing agent's brief. This is why it is temporary and hands to HR. Until then, treat any brief edit to an agent other than a brand-new one as needing founder approval.
+- Off-site backup is satisfied (private GitHub push, `.gitignore` verified), so memory now has real durability behind it.
+
+**Status.** Active. Grant 2 is explicitly temporary and expires to HR.
