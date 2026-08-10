@@ -159,16 +159,22 @@ def list_runs(limit: int = 100) -> list[dict]:
     try:
         rows = conn.execute(
             """
-            SELECT id, agent, session_id,
-                   substr(task, 1, 120) AS task,
-                   status, started, ended, error
-            FROM runs
-            ORDER BY id DESC
+            SELECT r.id, r.agent, r.session_id,
+                   substr(r.task, 1, 120) AS task,
+                   r.status, r.started, r.ended, r.error,
+                   (SELECT SUM(json_extract(l.detail, '$.total_cost_usd'))
+                    FROM run_log l
+                    WHERE l.run_id = r.id AND l.event_type = 'usage') AS cost_usd
+            FROM runs r
+            ORDER BY r.id DESC
             LIMIT ?
             """,
             (limit,),
         ).fetchall()
-        columns = ["id", "agent", "session_id", "task", "status", "started", "ended", "error"]
+        columns = [
+            "id", "agent", "session_id", "task",
+            "status", "started", "ended", "error", "cost_usd",
+        ]
         return [dict(zip(columns, row)) for row in rows]
     finally:
         conn.close()

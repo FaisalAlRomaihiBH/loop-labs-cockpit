@@ -7,6 +7,8 @@ LOOP_LABS_DIR = REPO_ROOT.parent                             # C:\loop-labs
 ENV_FILE = LOOP_LABS_DIR / ".cockpit-env.txt"                # secrets — outside both repos, never in ALLOWED_PATHS
 COMPANY_DIR = REPO_ROOT / "company"
 PRODUCT_REPO = LOOP_LABS_DIR / "carwash-app"                 # does not exist yet (Stage 2)
+REPORTS_DIR = COMPANY_DIR / "reports"
+AGENTS_DIR = COMPANY_DIR / "agents"
 
 # Roots agents may read from. ENV_FILE's directory is deliberately NOT here as a
 # root — only the two repositories are.
@@ -21,9 +23,14 @@ FOUNDERS = {"A": "Hasan", "B": "Faisal"}
 MODELS = {"ceo": "claude-opus-5", "default": "claude-sonnet-4-6"}
 
 # Per-agent tool allow-lists. CEO's full v1 set also includes assign_task
-# (added at Step 6). No Bash, no Edit — per the build package, permissions
-# are the enforcement layer, not instructions.
+# (added at Step 6) — that arrives via mcp_servers, not this list, since
+# `tools` only gates the built-in tool set. No Bash, no Edit — per the build
+# package, permissions are the enforcement layer, not instructions.
 TOOLS = {"ceo": ["Read", "Glob", "Grep", "Write"]}
+# Default allow-list for assigned agents that don't have their own entry
+# above (e.g. the throwaway test agent). Same shape as the CEO's for now —
+# read broadly, write only within the paths its guard allows.
+TOOLS["default"] = ["Read", "Glob", "Grep", "Write"]
 
 # Where the CEO may WRITE. Everything else — including the rest of this
 # repository — is read-only to it. Directories cover their whole subtree.
@@ -34,6 +41,17 @@ CEO_WRITE_PATHS = [
 ]
 
 PLAYBOOK_WORD_CAP = 2000
+
+# Generous, per the build package: long enough that real work is never cut
+# off, short enough that a stuck run does not hang indefinitely. A warning
+# is logged at the halfway mark (RUN_TIMEOUT_SECONDS / 2) so a run trending
+# long is visible before it actually times out.
+RUN_TIMEOUT_SECONDS = 600
+
+
+def agent_exists(name: str) -> bool:
+    return (AGENTS_DIR / name / "brief.md").exists()
+
 
 # The kill switch. If this file exists, no run starts and any in-flight run
 # is interrupted at its next check. The founders' emergency stop.
