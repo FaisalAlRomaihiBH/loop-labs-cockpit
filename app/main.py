@@ -1,8 +1,7 @@
-"""FastAPI app for the cockpit plumbing milestone.
+"""FastAPI app for the cockpit.
 
-No AI here yet: /api/message just echoes the founder's text back over SSE,
-word by word, so the streaming path can be verified end to end before any
-real agent is wired in.
+Step 2: /api/message runs the hard-coded test agent (app/agents.py) and
+streams its reply over SSE using the same envelope as Step 1.
 
 Run from the repo root with: uvicorn app.main:app
 """
@@ -18,7 +17,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import db
+from . import agents, db
 
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
@@ -62,20 +61,27 @@ class MessageRequest(BaseModel):
 
 @app.post("/api/session")
 async def create_session(body: SessionRequest):
-    session_id = db.create_session(agent="echo", founder=body.founder)
+    session_id = db.create_session(agent="test-agent", founder=body.founder)
     return {"session_id": session_id}
 
 
-async def _echo_reply(session_id: int, content: str) -> None:
-    """Background task: stream the echoed reply word by word, then persist it."""
+async def _agent_reply(session_id: int, content: str) -> None:
+    """Background task: stream the agent's reply, then persist it."""
     queue = _get_or_create_queue(session_id)
-    reply = f"Echo: {content}"
-    words = reply.split(" ")
-    for i, word in enumerate(words):
-        chunk = word + (" " if i < len(words) - 1 else "")
-        await queue.put({"type": "text", "content": chunk, "timestamp": _now()})
-        await asyncio.sleep(0.08)
-    db.add_message(session_id, role="agent", founder=None, content=reply)
+    chunks: list[str] = []
+    try:
+        async for chunk in agents.run_test_agent(content):
+            chunks.append(chunk)
+            await queue.put({"type": "text", "content": chunk, "timestamp": _now()})
+    except Exception as exc:
+        await queue.put(
+            {"type": "error", "content": f"agent error: {exc}", "timestamp": _now()}
+        )
+        await queue.put({"type": "done", "content": "", "timestamp": _now()})
+        return
+
+    full_reply = "".join(chunks)
+    db.add_message(session_id, role="agent", founder=None, content=full_reply)
     await queue.put({"type": "done", "content": "", "timestamp": _now()})
 
 
@@ -87,7 +93,7 @@ async def post_message(body: MessageRequest):
     db.add_message(
         body.session_id, role="founder", founder=body.founder, content=body.content
     )
-    task = asyncio.create_task(_echo_reply(body.session_id, body.content))
+    task = asyncio.create_task(_agent_reply(body.session_id, body.content))
     _background_tasks.add(task)
     task.add_done_callback(_background_tasks.discard)
     return {"ok": True}

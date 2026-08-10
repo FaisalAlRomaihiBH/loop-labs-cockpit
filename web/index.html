@@ -194,6 +194,8 @@
       const msg = JSON.parse(evt.data);
       if (msg.type === 'text') {
         appendToAgentBubble(msg.content);
+      } else if (msg.type === 'error') {
+        appendToAgentBubble('⚠ ' + msg.content);
       } else if (msg.type === 'done') {
         closeAgentBubble();
       }
