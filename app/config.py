@@ -25,6 +25,9 @@ MODELS = {
     # Top tier per the cost-control section: judgement with wide blast
     # radius (CEO, Architect, Security). Founder-approved 2026-08-10.
     "architect": "claude-opus-5",
+    # Mid tier per the cost-control section: most of the real work.
+    "backend": "claude-sonnet-4-6",
+    "frontend": "claude-sonnet-4-6",
     "default": "claude-sonnet-4-6",
 }
 
@@ -39,7 +42,10 @@ TOOLS = {"ceo": ["Read", "Glob", "Grep", "Write", "Edit"]}
 # Default allow-list for assigned agents that don't have their own entry
 # above (e.g. the throwaway test agent). Same shape as the CEO's for now —
 # read broadly, write only within the paths its guard allows.
-TOOLS["default"] = ["Read", "Glob", "Grep", "Write"]
+# Edit is included for the same founder-approved reasoning as the CEO's Edit
+# (2026-08-10): Write-only forces whole-file rewrites for a one-line change,
+# a real content-loss risk. Edit obeys the same write-path guard as Write.
+TOOLS["default"] = ["Read", "Glob", "Grep", "Write", "Edit"]
 
 # Where the CEO may WRITE. Everything else — including the rest of this
 # repository — is read-only to it. Directories cover their whole subtree.
@@ -56,6 +62,27 @@ CEO_WRITE_GLOBS = [
     str(COMPANY_DIR / "agents" / "*" / "brief.md"),
     str(COMPANY_DIR / "reports" / "*-ceo-*.md"),
 ]
+
+# Per-agent write boundaries for assigned agents, from the Architect's
+# draft ownership map (company/reports/2026-08-10-architect-run16.md).
+# Every agent may also write its own memory dir and company/reports/
+# (the map grants all agents runtime write access to reports).
+# deny wins over allow: backend/app/integrations/ belongs to the
+# Integrations Engineer even while that role does not exist.
+AGENT_WRITE_PATHS = {
+    "architect": [PRODUCT_REPO / "contracts", PRODUCT_REPO / "docs", COMPANY_DIR / "ownership.md"],
+    "backend": [PRODUCT_REPO / "backend"],
+    "frontend": [PRODUCT_REPO / "client"],
+}
+AGENT_DENY_PATHS = {
+    "backend": [PRODUCT_REPO / "backend" / "app" / "integrations"],
+}
+
+def agent_write_paths(name: str) -> list[Path]:
+    return [AGENTS_DIR / name, REPORTS_DIR] + AGENT_WRITE_PATHS.get(name, [])
+
+def agent_deny_paths(name: str) -> list[Path]:
+    return AGENT_DENY_PATHS.get(name, [])
 
 PLAYBOOK_WORD_CAP = 2000
 

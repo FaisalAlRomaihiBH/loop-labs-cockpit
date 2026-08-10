@@ -180,6 +180,7 @@ def make_path_guard(
     write_paths: list[Path],
     allow_tool_prefixes: tuple[str, ...] = (),
     write_globs: list[str] | None = None,
+    deny_paths: list[Path] | None = None,
 ) -> Callable[[str, dict, ToolPermissionContext], Awaitable[
     PermissionResultAllow | PermissionResultDeny
 ]]:
@@ -194,6 +195,10 @@ def make_path_guard(
     and two company files; an assigned agent's own brief directory and the
     reports dir). `write_globs` grants writes to individual files matching a
     pattern (e.g. any agent's brief.md) without opening the whole directory.
+    `deny_paths` carves out sub-paths that belong to another agent even
+    though they fall under one of `write_paths` (e.g. an Integrations
+    Engineer's territory nested inside the Backend Developer's directory,
+    per the ownership map) — deny is checked before allow, so it always wins.
 
     `allow_tool_prefixes` lets MCP tools (e.g. "mcp__cockpit__assign_task")
     through with no path check at all — they take no file-path argument in
@@ -216,6 +221,15 @@ def make_path_guard(
         resolved = Path(raw_path).resolve()
 
         if tool_name in ("Write", "Edit"):
+            for denied in deny_paths or []:
+                if resolved == denied or resolved.is_relative_to(denied):
+                    _log_denied(tool_name, resolved)
+                    return PermissionResultDeny(
+                        message=(
+                            f"write denied: {resolved} belongs to another "
+                            "agent (ownership map)"
+                        )
+                    )
             for allowed in write_paths:
                 if resolved == allowed or resolved.is_relative_to(allowed):
                     return PermissionResultAllow()
@@ -542,7 +556,8 @@ async def run_assigned_task(
             model=config.MODELS.get(agent, config.MODELS["default"]),
             tools=config.TOOLS.get(agent, config.TOOLS["default"]),
             can_use_tool=make_path_guard(
-                [config.REPORTS_DIR, config.AGENTS_DIR / agent]
+                config.agent_write_paths(agent),
+                deny_paths=config.agent_deny_paths(agent),
             ),
             cwd=str(config.REPO_ROOT),
             env=_agent_env(),
