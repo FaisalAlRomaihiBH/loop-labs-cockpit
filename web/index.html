@@ -413,12 +413,24 @@
     });
   }
 
-  document.getElementById('new-chat-link').addEventListener('click', (e) => {
+  // Two-click confirm: dialogs (confirm/alert) are unreliable in embedded
+  // browsers, so the link itself asks for the second click.
+  const newChatLink = document.getElementById('new-chat-link');
+  let newChatArmed = null;
+  newChatLink.addEventListener('click', (e) => {
     e.preventDefault();
-    if (confirm('Start a new session? The current conversation stays in the database but this page will start fresh.')) {
+    if (newChatArmed) {
       localStorage.removeItem('cockpitSessionId');
       window.location.reload();
+      return;
     }
+    newChatLink.textContent = 'click again for new chat';
+    newChatLink.style.color = '#ffb020';
+    newChatArmed = setTimeout(() => {
+      newChatArmed = null;
+      newChatLink.textContent = 'new chat';
+      newChatLink.style.color = '';
+    }, 4000);
   });
 
   document.getElementById('clear-btn').addEventListener('click', () => {
