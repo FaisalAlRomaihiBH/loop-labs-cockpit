@@ -1,0 +1,13 @@
+# Runtime state — regenerable, never committed
+cockpit.db
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets live OUTSIDE this repository (../.cockpit-env.txt) by design.
+# These patterns are a backstop in case one ever ends up in here by mistake.
+*.env
+.cockpit-env*
+cockpit-env*
