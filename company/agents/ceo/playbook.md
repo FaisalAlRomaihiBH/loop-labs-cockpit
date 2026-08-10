@@ -12,7 +12,9 @@ Rules the CEO has learned, not stories. Capped at 2,000 words; when it exceeds t
 ## Permissions
 
 - **The CEO write scope is `company/agents/ceo/`, `company/backlog.md`, `company/sprint.md`.** Everything else — specification, charter, constitution, other agents' briefs — is blocked by the cockpit path guard. Founder approval to change a document does not grant the permission to write it. When both are needed, get the approval and then hand execution to a founder or the owning agent; never work around the guard.
+- **The CEO has no `Edit` tool — only `Write`, which overwrites whole files.** Read a memory file before rewriting it, and reproduce the parts that are not changing. Budget for this when updating memory mid-session.
 
 ## Honesty about the environment
 
-- **Do not claim a check that cannot be performed.** No kill-switch mechanism exists in the repo, so no agent can truthfully say it checked one. State the gap rather than performing the ritual. Same rule applies to any other instruction in the constitution whose mechanism has not been built yet.
+- **Verify environment claims in the cockpit source before recording them as fact.** A rule written from "I could not find it" is a guess, not a finding. Grep `app/` first.
+- **The kill switch exists and is enforced by the runtime, not by the agent.** It is the file `company/KILL`. `app/agents.py` checks it before any run starts (refusing it) and again on every message mid-run (interrupting it). Consequence: an agent cannot meaningfully "check" it — if it were set, the run would not be happening. The honest statement is that the mechanism is structural and a running session is itself the proof it is clear. Do not perform a fake check, and do not claim the mechanism is missing.

@@ -131,6 +131,7 @@
 <header>
   <h1>Loop Labs Cockpit</h1>
   <div class="right">
+    <a class="runs-link" href="#" id="new-chat-link">new chat</a>
     <a class="runs-link" href="/runs">runs</a>
     <div class="founder-select">
       <label id="label-a"><input type="radio" name="founder" value="A" checked><span>Hasan</span></label>
@@ -205,15 +206,43 @@
     currentAgentBubble = null;
   }
 
+  function renderHistory(messages) {
+    for (const m of messages) {
+      if (m.role === 'founder') {
+        addFounderBubble(m.founder, m.content);
+      } else if (m.role === 'agent') {
+        appendToAgentBubble(m.content);
+        closeAgentBubble();
+      }
+    }
+  }
+
   async function startSession() {
-    const founder = getSelectedFounder();
-    const res = await fetch('/api/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ founder: founder })
-    });
-    const data = await res.json();
-    sessionId = data.session_id;
+    // Reuse the stored session so the conversation survives page reloads
+    // and detours to the runs page. "new chat" clears it.
+    const stored = localStorage.getItem('cockpitSessionId');
+    if (stored) {
+      try {
+        const res = await fetch('/api/session/' + stored + '/messages');
+        if (res.ok) {
+          const data = await res.json();
+          sessionId = data.session_id;
+          renderHistory(data.messages);
+        }
+      } catch (e) { /* fall through to a fresh session */ }
+    }
+
+    if (!sessionId) {
+      const founder = getSelectedFounder();
+      const res = await fetch('/api/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ founder: founder })
+      });
+      const data = await res.json();
+      sessionId = data.session_id;
+      localStorage.setItem('cockpitSessionId', sessionId);
+    }
 
     eventSource = new EventSource('/api/stream/' + sessionId);
     eventSource.onmessage = (evt) => {
@@ -253,6 +282,14 @@
       body: JSON.stringify({ session_id: sessionId, founder: founder, content: text })
     });
   }
+
+  document.getElementById('new-chat-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirm('Start a new session? The current conversation stays in the database but this page will start fresh.')) {
+      localStorage.removeItem('cockpitSessionId');
+      window.location.reload();
+    }
+  });
 
   sendBtn.addEventListener('click', sendMessage);
   input.addEventListener('keydown', (e) => {

@@ -133,8 +133,13 @@ def _system_prompt() -> str:
     return f"{constitution}\n\n{brief}"
 
 
-def _first_user_message(founder: str, content: str) -> str:
-    """Static docs first (for caching), then volatile docs, then the message."""
+def _first_user_message(founder: str, content: str, session_id: int) -> str:
+    """Static docs first (for caching), then volatile docs, then the message.
+
+    If the session already has message history (the cockpit restarted and the
+    live SDK conversation was lost), replay it so continuity survives — the
+    session model promises context persists for the whole conversation.
+    """
     parts: list[str] = []
 
     for path, heading in zip(config.CEO_STATIC_DOCS, _STATIC_HEADINGS):
@@ -145,6 +150,25 @@ def _first_user_message(founder: str, content: str) -> str:
 
     for path, heading in config.CEO_VOLATILE_DOCS:
         parts.append(f"# {heading}\n\n{_read(path)}")
+
+    # Everything before the message just persisted by the caller is prior
+    # conversation from before a cockpit restart.
+    history = db.list_messages(session_id)[:-1]
+    if history:
+        lines = []
+        for m in history:
+            speaker = (
+                f"[{_founder_label(m['founder'])}]" if m["role"] == "founder"
+                else "[You — the CEO]" if m["role"] == "agent"
+                else "[system]"
+            )
+            lines.append(f"{speaker}\n{m['content']}")
+        parts.append(
+            "# This Session So Far\n\n"
+            "The cockpit restarted mid-session; this is the conversation so "
+            "far, replayed verbatim. Continue it — do not start over.\n\n"
+            + "\n\n---\n\n".join(lines)
+        )
 
     parts.append(f"# Founder Message\n\n[{_founder_label(founder)}] {content}")
 
@@ -371,7 +395,7 @@ async def run_ceo_turn(
         client = _clients.get(session_id)
 
         if client is None:
-            prompt_text = _first_user_message(founder, content)
+            prompt_text = _first_user_message(founder, content, session_id)
             client = ClaudeSDKClient(options=_ceo_options())
             await client.connect()
             _clients[session_id] = client

@@ -115,6 +115,14 @@ async def post_message(body: MessageRequest):
     return {"ok": True}
 
 
+@app.get("/api/session/{session_id}/messages")
+async def session_messages(session_id: int):
+    """History for a session, so the page can restore a conversation."""
+    if not db.session_exists(session_id):
+        raise HTTPException(status_code=404, detail="session not found")
+    return {"session_id": session_id, "messages": db.list_messages(session_id)}
+
+
 @app.get("/api/stream/{session_id}")
 async def stream(session_id: int):
     queue = _get_or_create_queue(session_id)

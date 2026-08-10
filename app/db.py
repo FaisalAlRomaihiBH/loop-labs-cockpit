@@ -104,6 +104,20 @@ def add_message(session_id: int, role: str, founder: str | None, content: str) -
         conn.close()
 
 
+def list_messages(session_id: int) -> list[dict]:
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT role, founder, content, created FROM messages "
+            "WHERE session_id = ? ORDER BY id ASC",
+            (session_id,),
+        ).fetchall()
+        columns = ["role", "founder", "content", "created"]
+        return [dict(zip(columns, row)) for row in rows]
+    finally:
+        conn.close()
+
+
 def session_exists(session_id: int) -> bool:
     conn = _connect()
     try:
