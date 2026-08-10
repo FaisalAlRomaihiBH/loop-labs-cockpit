@@ -137,6 +137,44 @@
     font-size: 12px;
     padding: 2px 4px;
   }
+  /* Rendered markdown inside agent bubbles */
+  .agent-msg .text { white-space: normal; }
+  .agent-msg .text h1, .agent-msg .text h2, .agent-msg .text h3, .agent-msg .text h4 {
+    margin: 10px 0 4px;
+    line-height: 1.3;
+  }
+  .agent-msg .text h1 { font-size: 18px; }
+  .agent-msg .text h2 { font-size: 16px; }
+  .agent-msg .text h3 { font-size: 15px; }
+  .agent-msg .text h4 { font-size: 14px; }
+  .agent-msg .text p { margin: 6px 0; }
+  .agent-msg .text ul, .agent-msg .text ol { margin: 6px 0; padding-left: 22px; }
+  .agent-msg .text li { margin: 3px 0; }
+  .agent-msg .text code {
+    background: #d6d9de;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 12.5px;
+  }
+  .agent-msg .text pre {
+    background: #2b2d31;
+    color: #e8e8e8;
+    padding: 8px 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 6px 0;
+  }
+  .agent-msg .text pre code { background: none; color: inherit; padding: 0; }
+  .agent-msg .text table { border-collapse: collapse; margin: 8px 0; }
+  .agent-msg .text th, .agent-msg .text td {
+    border: 1px solid #c5c8cd;
+    padding: 4px 9px;
+    font-size: 13px;
+    text-align: left;
+  }
+  .agent-msg .text th { background: #d6d9de; }
+  .agent-msg .text hr { border: none; border-top: 1px solid #c5c8cd; margin: 10px 0; }
 </style>
 </head>
 <body>
@@ -204,7 +242,8 @@
     if (!currentAgentBubble) {
       currentAgentBubble = document.createElement('div');
       currentAgentBubble.className = 'bubble agent-msg';
-      currentAgentBubble.innerHTML = '<span class="label">Agent</span><span class="text"></span>';
+      currentAgentBubble.innerHTML = '<span class="label">Agent</span><div class="text"></div>';
+      currentAgentBubble._raw = '';
       chat.appendChild(currentAgentBubble);
     }
     return currentAgentBubble;
@@ -212,8 +251,85 @@
 
   function appendToAgentBubble(text) {
     const bubble = ensureAgentBubble();
-    bubble.querySelector('.text').textContent += text;
+    bubble._raw += text;
+    bubble.querySelector('.text').innerHTML = mdToHtml(bubble._raw);
     scrollToBottom();
+  }
+
+  // --- Minimal markdown renderer for agent messages -----------------------
+  // Escape first, format second: message text can never inject HTML.
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function mdInline(s) {
+    return s
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
+  }
+
+  function mdToHtml(raw) {
+    const lines = escapeHtml(raw).split('\n');
+    const out = [];
+    let para = [], list = null, listType = '', table = [], inCode = false, codeLines = [];
+
+    function flushPara() {
+      if (para.length) { out.push('<p>' + para.map(mdInline).join('<br>') + '</p>'); para = []; }
+    }
+    function flushList() {
+      if (list) { out.push('<' + listType + '>' + list.join('') + '</' + listType + '>'); list = null; }
+    }
+    function flushTable() {
+      if (!table.length) return;
+      const rows = table.map(l => l.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim()));
+      let html = '<table>', start = 0;
+      if (rows.length > 1 && rows[1].every(c => /^:?-{2,}:?$/.test(c))) {
+        html += '<tr>' + rows[0].map(c => '<th>' + mdInline(c) + '</th>').join('') + '</tr>';
+        start = 2;
+      }
+      for (let i = start; i < rows.length; i++) {
+        html += '<tr>' + rows[i].map(c => '<td>' + mdInline(c) + '</td>').join('') + '</tr>';
+      }
+      out.push(html + '</table>');
+      table = [];
+    }
+    function flushAll() { flushPara(); flushList(); flushTable(); }
+
+    for (const line of lines) {
+      if (inCode) {
+        if (/^```/.test(line)) { out.push('<pre><code>' + codeLines.join('\n') + '</code></pre>'); inCode = false; codeLines = []; }
+        else codeLines.push(line);
+        continue;
+      }
+      if (/^```/.test(line)) { flushAll(); inCode = true; continue; }
+
+      const heading = line.match(/^(#{1,4})\s+(.*)$/);
+      if (heading) { flushAll(); out.push('<h' + heading[1].length + '>' + mdInline(heading[2]) + '</h' + heading[1].length + '>'); continue; }
+
+      if (/^\s*(---+|\*\*\*+)\s*$/.test(line)) { flushAll(); out.push('<hr>'); continue; }
+
+      if (/^\s*\|.*\|\s*$/.test(line)) { flushPara(); flushList(); table.push(line); continue; }
+
+      const bullet = line.match(/^\s*[-*]\s+(.*)$/);
+      const numbered = line.match(/^\s*\d+[.)]\s+(.*)$/);
+      if (bullet || numbered) {
+        flushPara(); flushTable();
+        const type = bullet ? 'ul' : 'ol';
+        if (!list || listType !== type) { flushList(); list = []; listType = type; }
+        list.push('<li>' + mdInline((bullet || numbered)[1]) + '</li>');
+        continue;
+      }
+
+      if (!line.trim()) { flushAll(); continue; }
+
+      flushList(); flushTable();
+      para.push(line);
+    }
+    if (inCode) out.push('<pre><code>' + codeLines.join('\n') + '</code></pre>');
+    flushAll();
+    return out.join('');
   }
 
   function closeAgentBubble() {

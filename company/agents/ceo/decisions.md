@@ -4,6 +4,37 @@ Append-only. Every decision the CEO makes, with its reasoning and date, recorded
 
 ---
 
+## 2026-08-10 — Markdown rendering live; structured format now applies to BOTH founders
+
+**Directive.** Faisal shipped markdown rendering in the cockpit and revoked his own plain-style rule. Structured format — short bold subtitles, headings for larger type, small paragraphs, bullet points, tables, dividers — now applies to both founders.
+
+**Verified, not assumed.** `web/index.html` has a `mdToHtml` renderer (L259) applied to agent bubbles at L255 via `innerHTML`, replacing the earlier `.textContent` append. This is the same check that showed rendering was *not* live an hour earlier, so the verification habit earned its keep in both directions.
+
+**Consequence for the record.** The whole formatting sequence in one day: plain style for Hasan → extended to Faisal by Hasan → Hasan reverses for himself → Faisal states his own and revokes plain style. Two lessons, both already rules and both reinforced rather than new:
+
+- A preference with a stated cause is re-examined when the cause changes. The cause here was a rendering limitation; fixing it invalidated the rule built on it.
+- Never promote one founder's preference from the other's situation. Both founders ended in the same place, but only because each said it himself. Had I inferred Faisal's from Hasan's on either reversal I would have been wrong once and right once, with no way to tell which.
+
+**One risk I am recording against myself.** Structured formatting can hide reasoning by fragmenting an argument into disconnected bullets. The founders' explicit instruction across this session is to show reasoning. Where a recommendation needs a chain, the chain gets written as short paragraphs under a subtitle. Format serves comprehension; it does not replace argument.
+
+**Backlog item closed.** Rendering shipped, larger type delivered via headings.
+
+---
+
+## 2026-08-10 — Hasan reverses his own formatting rule: structured, marked-up, short-paragraph style
+
+**Directive.** Hasan asked for the opposite of what he asked for earlier the same day: short text, bold as subtitles, bigger font, small paragraphs, bullet points — because he understands it better that way. Recorded in `founders.md` as the current rule for **Hasan only**.
+
+**Why the reversal is coherent rather than contradictory, and worth recording.** The original plain-style instruction had a stated cause: the cockpit rendered CEO messages as plain text, so symbols appeared as clutter. Markdown rendering was then approved (option one). **The constraint disappeared with its cause, exactly as I had noted it would** — I had written that I would revisit the rule when rendering landed and would not change style without asking. Hasan moved first. The lesson to carry: a preference with a stated cause should be re-examined when the cause changes, rather than treated as permanent.
+
+**Not extended to Faisal.** His plain-style rule stands until he says so himself. Same standing rule as before — never record one founder's preference from the other's situation — which has already been right once at real cost.
+
+**Font size flagged honestly.** I cannot change font size from message text; only the cockpit can. Logged in the backlog rather than silently ignored or pretended away.
+
+**Presentation only.** Identical recommendations and identical depth to both founders. Structure changes; substance does not.
+
+---
+
 ## 2026-08-10 — MILESTONE BREAKDOWN APPROVED (M1–M8), with two additions
 
 **Made by.** Hasan, on behalf of both founders. This is the venture's first approved plan. Full text lives in `company/sprint.md` (loaded every session).

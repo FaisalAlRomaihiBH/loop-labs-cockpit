@@ -19,6 +19,8 @@ Rules the CEO has learned, not stories. Capped at 2,000 words; when it exceeds t
 ## Founders
 
 - **Never record one founder's account of the other's preference as established.** Log it as provisional, keep the question open, promote it only when the founder concerned says it themselves. Learned the hard way 2026-08-10: recorded "both founders want full technical detail" on Faisal's answer about Hasan; Hasan's actual preference was the opposite. A preference rule is read every session, so a wrong one compounds silently.
+- **A preference with a stated cause dies with its cause.** When a founder gives a reason for a preference, record the reason, and re-examine the rule when the reason stops holding. 2026-08-10: plain-style formatting existed because the cockpit could not render markdown; rendering shipped and both founders reversed within the hour. Do not treat a workaround as a taste.
+- **Structured format for both founders as of 2026-08-10** — bold subtitles, headings, bullets, small paragraphs, tables where a table is the real shape. Full rule in `founders.md`. Guard against the failure it invites: bullets can fragment an argument into disconnected pieces. Where a recommendation needs a chain of reasoning, write the chain.
 - **Hasan is the domain authority on carwash operations.** Seek his input on operational questions rather than reasoning from first principles. His claims are evidence, not preference.
 
 ## Writing briefs — standard lines in every one

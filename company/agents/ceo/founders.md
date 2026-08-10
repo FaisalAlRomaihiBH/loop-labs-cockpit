@@ -32,7 +32,24 @@ What the CEO learns about how each founder works — communication style, decisi
 - **This is communication only.** Identical recommendations to both on identical decisions. The company's direction must not depend on which founder asked.
 - Charter §42h ("plainer for one, deeper for the other") and the CEO brief's equivalent line are therefore **correct after all**, and are restored.
 
-### Formatting — both founders (Hasan stated 2026-08-10; extended to Faisal by Hasan the same day)
+### Formatting — CURRENT RULE, BOTH FOUNDERS (Hasan stated 2026-08-10; Faisal stated the same day and revoked his own plain-style rule)
+
+**Write to both founders in structured markdown.** Short bold subtitles, headings for larger type, bullet points, small paragraphs, tables where a table is genuinely the right shape, dividers to separate sections.
+
+- Paragraphs of one to three sentences. Never a wall of text.
+- Bold short lines as subtitles; headings where larger type helps.
+- Bullets wherever a list is the real shape of the content.
+- Markdown renders properly in the cockpit as of 2026-08-10 — verified in `web/index.html` (`mdToHtml`, applied at L255). Bold, headings, bullets, tables and dividers all display.
+
+**Why this is one answer for both, and what still must not be generalised.** Each founder stated it himself — Hasan first, then Faisal directly. It is not inferred from the other. The standing rule survives untouched: never record one founder's preference from the other's situation. It has now been right twice, and both times the founder's own words are what promoted it.
+
+**Depth does not drop with the format.** Same substance, same honesty, same reasoning shown. Shorter paragraphs, not less content. Technical matters still pitched in plainer language for Hasan, per the rule above; full technical depth for Faisal.
+
+**Structure is not a substitute for argument.** Bullets can hide reasoning by fragmenting it. Where a recommendation needs a chain of reasoning, write the chain — short paragraphs under a bold subtitle, not five disconnected fragments.
+
+### FULLY SUPERSEDED — Formerly: plain style, both founders (2026-08-10, earlier the same day)
+
+Retained because the reasoning still governs Faisal, and because the reversal is itself evidence about how preferences form here: the original cause was the cockpit rendering CEO messages as plain text. Markdown rendering was then approved (option one), which removed the cause. Hasan's new instruction is what the constraint disappearing looks like in practice.
 
 Write to both founders without markdown symbols. The cockpit renders CEO messages as plain text, so the symbols appear as clutter rather than formatting.
 
@@ -42,7 +59,7 @@ No hash characters before headings — a heading is a short line of its own in p
 
 Presentation only. Same substance, same depth, same honesty. Never say less because the style is plainer. Technical matters still pitched in plainer language for Hasan, per the rule above, but not thinned out.
 
-Not yet confirmed for Faisal. The cause is a cockpit rendering behaviour that presumably affects both founders, but Hasan stated this and Faisal has not — and the rule directly below is that I do not record one founder's preference from the other's situation. Ask Faisal; until then, plain style for Hasan, and ask rather than assume for Faisal.
+RESOLVED 2026-08-10 — Faisal answered directly and revoked his own plain-style rule. Structured markdown now applies to both. Kept on the record because the sequence worked exactly as intended: ask rather than assume, and promote a preference only when the founder concerned states it himself.
 
 **What I got wrong, and the lesson.** Earlier the same day I recorded "both founders get full technical detail" on the strength of Faisal answering a question *about Hasan*. Hasan then stated his own preference and it was the opposite. Faisal did not misinform me — I asked him to speak for his brother and treated the answer as settled rather than provisional, even while noting in the same file that I wanted it from Hasan directly.
 
