@@ -20,7 +20,13 @@ FOUNDERS = {"A": "Hasan", "B": "Faisal"}
 
 # Per-agent model. CEO gets the most capable tier; mid tier is the default for
 # future agents per the cost-control section. One line to change.
-MODELS = {"ceo": "claude-opus-5", "default": "claude-sonnet-4-6"}
+MODELS = {
+    "ceo": "claude-opus-5",
+    # Top tier per the cost-control section: judgement with wide blast
+    # radius (CEO, Architect, Security). Founder-approved 2026-08-10.
+    "architect": "claude-opus-5",
+    "default": "claude-sonnet-4-6",
+}
 
 # Per-agent tool allow-lists. CEO's full v1 set also includes assign_task
 # (added at Step 6) — that arrives via mcp_servers, not this list, since
@@ -79,6 +85,9 @@ CEO_VOLATILE_DOCS = [
     (COMPANY_DIR / "agents" / "ceo" / "decisions.md", "Your Memory — Decision Log"),
     (COMPANY_DIR / "agents" / "ceo" / "playbook.md", "Your Memory — Playbook"),
     (COMPANY_DIR / "agents" / "ceo" / "founders.md", "Your Memory — Founder Preferences"),
+    # Part of the founder-approved Option B memory structure — a fresh
+    # session must see what's blocked on a decision and since when.
+    (COMPANY_DIR / "agents" / "ceo" / "open-questions.md", "Your Memory — Open Questions"),
     (COMPANY_DIR / "lessons.md", "Shared Lessons"),
     (COMPANY_DIR / "ownership.md", "Ownership Map"),
     (COMPANY_DIR / "sprint.md", "Sprint State"),

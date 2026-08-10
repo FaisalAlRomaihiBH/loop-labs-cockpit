@@ -2,43 +2,56 @@
 
 What is waiting on a founder decision, and since when. Removed once answered — the answer itself goes to `decisions.md`, not here.
 
-*Created 2026-08-10 during the first founder session. This file sits inside `company/agents/ceo/`, which is already in the CEO's write scope, so it needs no new permission. It exists because the nine questions below were held only in a chat log that had just demonstrated it can be interrupted. If the founders reject the memory-organisation proposal that included it, delete it.*
+---
+
+## Open
+
+### Cockpit configuration — three gaps blocking the Architect (raised 2026-08-10)
+
+Verified in `app/agents.py` and `app/config.py`, not assumed. Cockpit config is DevOps's, and DevOps does not exist, so it is a founder action.
+
+1. **The Architect cannot write `company/ownership.md`.** `run_assigned_task` hardcodes an assigned agent's write scope to `[company/reports/, company/agents/<own-name>/]`. There is no per-agent write-path table for assigned agents as there is for the CEO. Its single most important deliverable is unwritable. *Workaround in place:* the brief instructs it to deliver the map as its report; a founder moves it. No code change strictly required.
+2. **No `MODELS["architect"]` entry** — it would fall through to the faster default. The specification puts the Architect on the strongest tier alongside CEO and Security, because its blast radius is the widest of any technical role.
+3. **No `TOOLS["architect"]` entry** — it gets `Write` without `Edit`, the same whole-file-rewrite content-loss risk that justified granting the CEO `Edit`.
+
+### No agent can do web research — blocks the competitor teardown (raised 2026-08-10)
+
+The specification allows web research to any agent whenever useful. **No agent has a web tool.** `TOOLS["ceo"]` is `Read, Glob, Grep, Write, Edit`; `TOOLS["default"]` is the same without `Edit`. Nothing can fetch or search.
+
+Consequence: the competitor teardown the founders asked for cannot be run by me or by any agent I could assign it to. It also weakens the provisional-price proposal, which was to be based on Hasan's market knowledge *plus* the teardown. Hasan's knowledge alone can carry a provisional number, but I should say plainly that it is one input rather than two.
+
+Needs a founder decision: add web tools to the CEO, wait and give them to a research-capable agent later, or the founders run the teardown themselves.
+
+### Architect brief — awaiting approval (raised 2026-08-10)
+
+Drafted at `company/agents/architect/brief.md`, version 1.0. Adding a role is a hard stop; nothing activates without founder approval.
+
+### Confirmation sought on two answers (raised 2026-08-10)
+
+Hasan's answer message opened with a note that the registration and advisor items stated what was true "when we last discussed it". Both are calendar-time items where a stale answer costs weeks rather than hours, so:
+
+- **Company registration** — still not started, jurisdiction still undecided?
+- **Advisor conversations** — still none of the four started?
+
+If either has moved, my sequencing changes materially.
+
+### Genuinely blocked, not awaiting a decision
+
+- **Deposit sizing** — depends on the payment gateway's actual chargeback dispute windows, which depends on gateway selection, which depends on company registration. Founders have cut the circularity at the price link instead; this one stays blocked and must not hold up anything else.
 
 ---
 
-## Asked 2026-08-10 — first founder session, awaiting answers
+## Answered
 
-**Permissions and tooling** — **ANSWERED 2026-08-10 by Faisal. All three granted.** Memory structure Option B approved. Details in `decisions.md`; scope rule in `playbook.md`. Items 1–3 closed. The blocker on building the organisation is cleared.
-1. ~~Write access to `company/agents/*/brief.md`~~ — granted, briefs only, moves to HR when HR exists.
-2. ~~Write access to `company/reports/`~~ — granted, scoped by filename to `*-ceo-*.md`.
-3. ~~An `Edit` tool~~ — granted, same path guard as `Write`.
+**2026-08-10 — permissions and tooling.** All three granted (brief writes, own reports, `Edit`), memory structure Option B approved. See `decisions.md`.
 
-*Note: item 5 below is now the gating question for the next construction step. With write access in hand, the Architect's brief is drafted as soon as the shadow-period question is settled.*
+**2026-08-10 — the nine opening questions.** All answered by Hasan and Faisal jointly. Recorded in full in `decisions.md`. Summary of what is now settled:
 
-**Sequencing and strategy**
-4. Do we put the business tooling in front of paying businesses before the customer marketplace exists? Biggest sequencing question in the venture; changes the whole shape of the milestone proposal. Founders' instinct wanted before I build a plan around mine.
-5. Shadow-period ordering: new agents get first tasks reviewed by the CTO, and the CTO does not exist. Either the CTO comes first/alongside the Architect, or I review the Architect's first output and founders approve. I lean to the latter; reviewing technical design is not my authority, so it is their call.
-6. How much cockpit work comes before product work? Named in the charter as a real sequencing question with a scope risk attached.
-
-**Founder-track items — calendar time, not work time**
-7. Is company registration in motion, and where? Gates the payment gateway, which gates the entire booking and payment flow.
-8. Are the advisor conversations started — wallet licensing, VAT, data residency, payroll exposure? These are the items where a late answer is most expensive.
-
-**Validation**
-9. Do we take the real commercial proposition — actual price, deposit, annual term — to three businesses now, before we build? If yes, we need a provisional price and I would propose one rather than research indefinitely.
-
-**Pricing circularity** (no answer possible yet; needs a link cut)
-10. Base fee is undecided pending GCC research → deposit sizing depends on gateway dispute windows → gateway depends on company registration → and validating willingness to pay requires a real price. Which link do the founders want cut first?
-
-**Domain input from Hasan**
-11. What do owners actually pay for comparable tools today, and what would make them refuse at the door?
-12. Competitor teardown — do the founders want me to run one, or will Hasan tell me what those products do?
-13. Are the "not yet decided" items genuinely open — damage liability, minimum rating threshold, marketing add-on, returning-customer home screen, first-run experience — or does Hasan already know the answers from the market? Treating a known answer as open research is waste.
-14. Hasan to confirm directly that he wants full technical detail. Recorded in `founders.md` as a rule overriding the founding documents, on Faisal's word rather than Hasan's.
-
-**Operating rhythm**
-15. Until the approval queue exists, how do founders want merge approvals delivered? In session, or somewhere I do not yet have.
-16. Is the thirty-day assessment a real gate, and from what date — today, or from when the first product code lands? Coexists with "no timeline or deadline is set", but I cannot run it without a start date.
-
-**The one that matters most**
-17. Anything in my reading of the business that is wrong. Per the specification, founders should form their own view before reading mine; divergence where they were right is the earliest available signal that I am drifting.
+- Lead with the business tooling, not the marketplace. Direction; the CEO proposes what it means concretely.
+- Run the competitor teardown, alongside Hasan's market knowledge.
+- Registration not started; advisors not started. Both on the critical path; plan around their absence.
+- Take the real proposition to three businesses before building. CEO proposes a provisional price, marked provisional.
+- Cockpit work stays minimal — fix what actively blocks, nothing speculative.
+- Merge approvals in session: summary for routine, summary plus diff for payments, personal data, security, wallet.
+- Hasan: plainer on technical matters, full detail on request. Faisal: depth directly. Communication only, never judgement.
+- The CEO's reading of the business is accurate. Marketing add-on genuinely undefined. Thirty-day assessment runs from first product code. CEO reviews the Architect's first output, founders approve, reverts to CTO when it exists.

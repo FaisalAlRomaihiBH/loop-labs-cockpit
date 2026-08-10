@@ -25,9 +25,28 @@ What the CEO learns about how each founder works — communication style, decisi
 
 ## Communication
 
-- **Both founders get full technical detail.** Confirmed by Faisal 2026-08-10 when asked directly about Hasan. Do not simplify, summarise away, or withhold technical depth from Hasan on the assumption that his expertise is operational rather than technical.
-- This **supersedes charter §42h** ("plainer for one, deeper for the other") and the CEO brief's line that "one prefers more technical detail, one prefers plainer language". Those were written before either founder was asked. Founder-stated preference wins over founding-document assumption.
-- Practical effect: presentation differs little between the two. Lead with the answer, keep it plain-English in structure, and include the technical substance rather than gating it behind a follow-up question.
+**CORRECTED 2026-08-10, later the same day. The rule below replaces an earlier one that was wrong.**
+
+- **Hasan — plainer language on technical matters, full detail available whenever he asks.** His background is the carwash market, not computer science. Do not lead with implementation depth; do not withhold it either. Offer it, don't impose it.
+- **Faisal — technical depth directly.** No translation layer.
+- **This is communication only.** Identical recommendations to both on identical decisions. The company's direction must not depend on which founder asked.
+- Charter §42h ("plainer for one, deeper for the other") and the CEO brief's equivalent line are therefore **correct after all**, and are restored.
+
+### Formatting — both founders (Hasan stated 2026-08-10; extended to Faisal by Hasan the same day)
+
+Write to both founders without markdown symbols. The cockpit renders CEO messages as plain text, so the symbols appear as clutter rather than formatting.
+
+**Why this is the same answer for both, and what not to generalise from it.** Hasan stated the preference; I asked rather than assuming it applied to Faisal; Hasan confirmed it does. The reason it applies to both is that **the cause is the page rendering, not a difference between the founders.** Two founders sharing one answer here is a fact about the cockpit, not evidence that their preferences align generally. Do not use this as precedent for inferring one founder's preference from the other's. If the cockpit renders markdown later, revisit — the constraint disappears with its cause.
+
+No hash characters before headings — a heading is a short line of its own in plain words, standing as a heading by position. No asterisks for emphasis — if something matters, give it its own sentence or lead the paragraph with it. No bullet characters — short paragraphs instead, or where a list is genuinely the right shape, short unmarked lines. Blank line between paragraphs. Structure from spacing and ordering, not punctuation.
+
+Presentation only. Same substance, same depth, same honesty. Never say less because the style is plainer. Technical matters still pitched in plainer language for Hasan, per the rule above, but not thinned out.
+
+Not yet confirmed for Faisal. The cause is a cockpit rendering behaviour that presumably affects both founders, but Hasan stated this and Faisal has not — and the rule directly below is that I do not record one founder's preference from the other's situation. Ask Faisal; until then, plain style for Hasan, and ask rather than assume for Faisal.
+
+**What I got wrong, and the lesson.** Earlier the same day I recorded "both founders get full technical detail" on the strength of Faisal answering a question *about Hasan*. Hasan then stated his own preference and it was the opposite. Faisal did not misinform me — I asked him to speak for his brother and treated the answer as settled rather than provisional, even while noting in the same file that I wanted it from Hasan directly.
+
+**Rule: never record one founder's account of the other's preference as an established preference.** Log it as provisional and unconfirmed, keep the question open, and only promote it once the founder concerned says it themselves. A preference rule is read every session and shapes every message, so a wrong one compounds silently — which is exactly the failure mode the "corrections are approved before they are remembered" discipline exists to prevent.
 
 ## Evidence boundary
 
