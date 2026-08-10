@@ -18,7 +18,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import agents, db
+from . import agents, config, db
 
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
@@ -94,7 +94,8 @@ async def _ceo_reply(session_id: int, founder: str, content: str) -> None:
         return
 
     full_reply = "".join(chunks)
-    db.add_message(session_id, role="agent", founder=None, content=full_reply)
+    if full_reply:
+        db.add_message(session_id, role="agent", founder=None, content=full_reply)
     await queue.put({"type": "done", "content": "", "timestamp": _now()})
 
 
@@ -141,6 +142,38 @@ async def stream(session_id: int):
     )
 
 
+@app.get("/api/runs")
+async def get_runs():
+    return {"kill": config.KILL_FILE.exists(), "runs": db.list_runs()}
+
+
+@app.get("/api/runs/{run_id}")
+async def get_run(run_id: int):
+    run = db.get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="run not found")
+    return run
+
+
+@app.post("/api/kill")
+async def set_kill():
+    config.KILL_FILE.parent.mkdir(parents=True, exist_ok=True)
+    config.KILL_FILE.write_text(f"set via cockpit at {_now()}\n", encoding="utf-8")
+    return {"kill": True}
+
+
+@app.delete("/api/kill")
+async def clear_kill():
+    if config.KILL_FILE.exists():
+        config.KILL_FILE.unlink()
+    return {"kill": False}
+
+
 @app.get("/")
 async def index():
     return FileResponse(WEB_DIR / "index.html")
+
+
+@app.get("/runs")
+async def runs_page():
+    return FileResponse(WEB_DIR / "runs.html")

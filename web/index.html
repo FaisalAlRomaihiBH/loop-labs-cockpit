@@ -23,6 +23,20 @@
     justify-content: space-between;
   }
   header h1 { font-size: 16px; margin: 0; }
+  header .right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .runs-link {
+    color: #bbb;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .runs-link:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
   .founder-select {
     display: flex;
     gap: 4px;
@@ -116,9 +130,12 @@
 
 <header>
   <h1>Loop Labs Cockpit</h1>
-  <div class="founder-select">
-    <label id="label-a"><input type="radio" name="founder" value="A" checked><span>Hasan</span></label>
-    <label id="label-b"><input type="radio" name="founder" value="B"><span>Faisal</span></label>
+  <div class="right">
+    <a class="runs-link" href="/runs">runs</a>
+    <div class="founder-select">
+      <label id="label-a"><input type="radio" name="founder" value="A" checked><span>Hasan</span></label>
+      <label id="label-b"><input type="radio" name="founder" value="B"><span>Faisal</span></label>
+    </div>
   </div>
 </header>
 

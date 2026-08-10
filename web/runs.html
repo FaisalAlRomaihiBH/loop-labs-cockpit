@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Loop Labs Cockpit — Runs</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, Segoe UI, Arial, sans-serif;
+    margin: 0;
+    background: #f4f5f7;
+    color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    padding: 12px 16px;
+    background: #202225;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header h1 { font-size: 16px; margin: 0; }
+  header .right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .back-link {
+    color: #bbb;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .back-link:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+  #kill-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #kill-btn.off {
+    background: #3a3d42;
+    color: #ccc;
+  }
+  #kill-btn.set {
+    background: #d13438;
+    color: #fff;
+  }
+  #main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    font-size: 13px;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+  }
+  th {
+    background: #ececef;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #555;
+  }
+  tbody tr {
+    cursor: pointer;
+  }
+  tbody tr:hover {
+    background: #f0f1fb;
+  }
+  .status {
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    display: inline-block;
+  }
+  .status-completed { background: #dff5e1; color: #1e7a2e; }
+  .status-failed { background: #fbe0e0; color: #a11b1b; }
+  .status-killed { background: #3a1414; color: #ff9090; }
+  .status-running { background: #dde6fd; color: #2b4fd6; }
+  .task-cell {
+    max-width: 360px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .events-row td {
+    background: #fafafa;
+    padding: 0;
+  }
+  .events {
+    padding: 10px 20px;
+    font-family: Consolas, "SF Mono", monospace;
+    font-size: 12px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .event-line {
+    display: grid;
+    grid-template-columns: 190px 90px 1fr;
+    gap: 10px;
+    padding: 3px 0;
+    border-bottom: 1px solid #eee;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .event-type {
+    font-weight: 600;
+    color: #444;
+  }
+  .event-time {
+    color: #888;
+  }
+  .empty {
+    color: #888;
+    font-size: 13px;
+    padding: 20px;
+    text-align: center;
+  }
+  .error-note {
+    color: #a11b1b;
+    padding: 6px 20px 12px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Loop Labs Cockpit — Runs</h1>
+  <div class="right">
+    <button id="kill-btn" class="off">loading...</button>
+    <a class="back-link" href="/">&larr; back to chat</a>
+  </div>
+</header>
+
+<div id="main">
+  <table>
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>agent</th>
+        <th>status</th>
+        <th>task</th>
+        <th>started</th>
+        <th>duration</th>
+      </tr>
+    </thead>
+    <tbody id="runs-body"></tbody>
+  </table>
+  <div id="empty" class="empty" style="display:none;">No runs yet.</div>
+</div>
+
+<script>
+  const killBtn = document.getElementById('kill-btn');
+  const runsBody = document.getElementById('runs-body');
+  const emptyMsg = document.getElementById('empty');
+
+  let killState = false;
+  let expandedRunId = null;
+  let refreshTimer = null;
+
+  function fmtDuration(started, ended) {
+    if (!started) return '';
+    const start = new Date(started).getTime();
+    const end = ended ? new Date(ended).getTime() : Date.now();
+    const secs = Math.max(0, Math.round((end - start) / 1000));
+    if (secs < 60) return secs + 's';
+    const mins = Math.floor(secs / 60);
+    const rem = secs % 60;
+    return mins + 'm ' + rem + 's';
+  }
+
+  function fmtTime(iso) {
+    if (!iso) return '';
+    try {
+      return new Date(iso).toLocaleString();
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  function statusClass(status) {
+    return 'status status-' + (status || 'running');
+  }
+
+  function updateKillButton() {
+    if (killState) {
+      killBtn.className = 'set';
+      killBtn.textContent = 'KILL SWITCH: SET — click to clear';
+    } else {
+      killBtn.className = 'off';
+      killBtn.textContent = 'Kill switch: off — click to SET';
+    }
+  }
+
+  async function toggleKill() {
+    if (killState) {
+      await fetch('/api/kill', { method: 'DELETE' });
+    } else {
+      if (!confirm('Set the kill switch? No new runs will start and any in-flight run will be interrupted.')) {
+        return;
+      }
+      await fetch('/api/kill', { method: 'POST' });
+    }
+    await refresh();
+  }
+
+  killBtn.addEventListener('click', toggleKill);
+
+  function renderEventsRow(run) {
+    const tr = document.createElement('tr');
+    tr.className = 'events-row';
+    const td = document.createElement('td');
+    td.colSpan = 6;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'events';
+
+    if (run.error) {
+      const err = document.createElement('div');
+      err.className = 'error-note';
+      err.textContent = 'error: ' + run.error;
+      wrap.appendChild(err);
+    }
+
+    if (!run.events || run.events.length === 0) {
+      const none = document.createElement('div');
+      none.style.color = '#888';
+      none.style.padding = '8px 0';
+      none.textContent = 'No events logged.';
+      wrap.appendChild(none);
+    } else {
+      run.events.forEach(ev => {
+        const line = document.createElement('div');
+        line.className = 'event-line';
+        const time = document.createElement('span');
+        time.className = 'event-time';
+        time.textContent = fmtTime(ev.timestamp);
+        const type = document.createElement('span');
+        type.className = 'event-type';
+        type.textContent = ev.event_type;
+        const detail = document.createElement('span');
+        detail.textContent = ev.detail || '';
+        line.appendChild(time);
+        line.appendChild(type);
+        line.appendChild(detail);
+        wrap.appendChild(line);
+      });
+    }
+
+    td.appendChild(wrap);
+    tr.appendChild(td);
+    return tr;
+  }
+
+  async function toggleRow(runId) {
+    if (expandedRunId === runId) {
+      expandedRunId = null;
+      await renderRuns(lastRuns);
+      return;
+    }
+    expandedRunId = runId;
+    await renderRuns(lastRuns);
+  }
+
+  let lastRuns = [];
+
+  async function renderRuns(runs) {
+    lastRuns = runs;
+    runsBody.innerHTML = '';
+    emptyMsg.style.display = runs.length === 0 ? 'block' : 'none';
+
+    for (const run of runs) {
+      const tr = document.createElement('tr');
+      tr.addEventListener('click', () => toggleRow(run.id));
+
+      const cells = [
+        run.id,
+        run.agent,
+        null, // status, built below
+        run.task || '',
+        fmtTime(run.started),
+        fmtDuration(run.started, run.ended),
+      ];
+
+      cells.forEach((val, idx) => {
+        const td = document.createElement('td');
+        if (idx === 2) {
+          const span = document.createElement('span');
+          span.className = statusClass(run.status);
+          span.textContent = run.status;
+          td.appendChild(span);
+        } else if (idx === 3) {
+          td.className = 'task-cell';
+          td.textContent = val;
+          td.title = val;
+        } else {
+          td.textContent = val;
+        }
+        tr.appendChild(td);
+      });
+
+      runsBody.appendChild(tr);
+
+      if (expandedRunId === run.id) {
+        try {
+          const res = await fetch('/api/runs/' + run.id);
+          if (res.ok) {
+            const full = await res.json();
+            runsBody.appendChild(renderEventsRow(full));
+          }
+        } catch (e) {
+          // ignore transient fetch errors on expand
+        }
+      }
+    }
+  }
+
+  async function refresh() {
+    try {
+      const res = await fetch('/api/runs');
+      const data = await res.json();
+      killState = data.kill;
+      updateKillButton();
+      await renderRuns(data.runs || []);
+    } catch (e) {
+      // keep showing the last known state on a transient failure
+    }
+  }
+
+  refresh();
+  refreshTimer = setInterval(refresh, 5000);
+</script>
+
+</body>
+</html>

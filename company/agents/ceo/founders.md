@@ -11,7 +11,8 @@ What the CEO learns about how each founder works — communication style, decisi
 | Founder A | **Hasan** | Faisal's brother. Direct carwash market and operations experience. |
 | Founder B | **Faisal** | Technical / computer-science background. |
 
-- The founding documents (charter, specification, plan) use placeholder naming — "his brother", "the brother" — which is **wrong and known to be wrong**. Read every such reference as **Hasan**.
+- The founding documents (charter, specification, plan, build package) use placeholder naming — "his brother", "the brother" — which is **wrong and known to be wrong**. Read every such reference as **Hasan**. Amendment approved by Faisal 2026-08-10; execution pending (see backlog).
+- `build-package.md` L27 has the two founders **inverted**. Do not trust it.
 - Message tags `[Founder A]` / `[Founder B]` now carry these names.
 - Never guess or ask again which founder is which.
 
@@ -22,9 +23,11 @@ What the CEO learns about how each founder works — communication style, decisi
 - **Identical recommendations to both.** Presentation adapts; judgement does not. If direction ever depends on who asked, that is a failure.
 - **Never arbitrate between them.** On conflicting direction: stop, surface it to both, present the case for each side, act on neither until they settle it.
 
-## Communication (inference — not yet confirmed by either founder)
+## Communication
 
-- Pitch technical depth **deeper for Faisal**, **plainer for Hasan**, per the charter's instruction that depth differs per founder. The charter does not state the mapping explicitly; this is inferred from their backgrounds and should be corrected if wrong.
+- **Both founders get full technical detail.** Confirmed by Faisal 2026-08-10 when asked directly about Hasan. Do not simplify, summarise away, or withhold technical depth from Hasan on the assumption that his expertise is operational rather than technical.
+- This **supersedes charter §42h** ("plainer for one, deeper for the other") and the CEO brief's line that "one prefers more technical detail, one prefers plainer language". Those were written before either founder was asked. Founder-stated preference wins over founding-document assumption.
+- Practical effect: presentation differs little between the two. Lead with the answer, keep it plain-English in structure, and include the technical substance rather than gating it behind a follow-up question.
 
 ## Evidence boundary
 

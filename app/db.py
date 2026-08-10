@@ -113,3 +113,88 @@ def session_exists(session_id: int) -> bool:
         return row is not None
     finally:
         conn.close()
+
+
+def create_run(agent: str, session_id: int | None, task: str) -> int:
+    conn = _connect()
+    try:
+        cur = conn.execute(
+            "INSERT INTO runs (agent, session_id, task, status, started) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (agent, session_id, task, "running", _now()),
+        )
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        conn.close()
+
+
+def finish_run(run_id: int, status: str, error: str | None = None) -> None:
+    conn = _connect()
+    try:
+        conn.execute(
+            "UPDATE runs SET status = ?, ended = ?, error = ? WHERE id = ?",
+            (status, _now(), error, run_id),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def add_run_log(run_id: int, event_type: str, detail: str) -> None:
+    conn = _connect()
+    try:
+        conn.execute(
+            "INSERT INTO run_log (run_id, event_type, detail, timestamp) "
+            "VALUES (?, ?, ?, ?)",
+            (run_id, event_type, detail, _now()),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def list_runs(limit: int = 100) -> list[dict]:
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            """
+            SELECT id, agent, session_id,
+                   substr(task, 1, 120) AS task,
+                   status, started, ended, error
+            FROM runs
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        columns = ["id", "agent", "session_id", "task", "status", "started", "ended", "error"]
+        return [dict(zip(columns, row)) for row in rows]
+    finally:
+        conn.close()
+
+
+def get_run(run_id: int) -> dict | None:
+    conn = _connect()
+    try:
+        row = conn.execute(
+            "SELECT id, agent, session_id, task, status, started, ended, error "
+            "FROM runs WHERE id = ?",
+            (run_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        columns = ["id", "agent", "session_id", "task", "status", "started", "ended", "error"]
+        run = dict(zip(columns, row))
+
+        events = conn.execute(
+            "SELECT event_type, detail, timestamp FROM run_log "
+            "WHERE run_id = ? ORDER BY id ASC",
+            (run_id,),
+        ).fetchall()
+        run["events"] = [
+            {"event_type": e[0], "detail": e[1], "timestamp": e[2]} for e in events
+        ]
+        return run
+    finally:
+        conn.close()

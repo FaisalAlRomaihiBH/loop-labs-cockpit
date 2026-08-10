@@ -35,6 +35,10 @@ CEO_WRITE_PATHS = [
 
 PLAYBOOK_WORD_CAP = 2000
 
+# The kill switch. If this file exists, no run starts and any in-flight run
+# is interrupted at its next check. The founders' emergency stop.
+KILL_FILE = COMPANY_DIR / "KILL"
+
 # Context documents for the CEO, in prompt order.
 # Static (byte-identical every session — must come FIRST for prompt caching):
 CEO_STATIC_DOCS = [COMPANY_DIR / "specification.md", COMPANY_DIR / "plan.md"]
