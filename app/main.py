@@ -1,13 +1,14 @@
 """FastAPI app for the cockpit.
 
-Step 2: /api/message runs the hard-coded test agent (app/agents.py) and
-streams its reply over SSE using the same envelope as Step 1.
+Step 3: /api/message runs a CEO session turn (app/agents.py) with full
+company context, streaming over the same SSE envelope as Step 1.
 
 Run from the repo root with: uvicorn app.main:app
 """
 
 import asyncio
 import json
+import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,6 +21,10 @@ from pydantic import BaseModel
 from . import agents, db
 
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
+
+# Make cockpit.* loggers visible in the server output — per-turn token usage
+# and cost land there, and cost visibility is a build requirement.
+logging.basicConfig(level=logging.INFO)
 
 # One queue per session, created lazily. Messages for a session are pushed
 # here by the echo task and pulled by that session's SSE generator.
@@ -44,6 +49,7 @@ def _now() -> str:
 async def lifespan(app: FastAPI):
     db.init_db()
     yield
+    await agents.shutdown()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -61,18 +67,25 @@ class MessageRequest(BaseModel):
 
 @app.post("/api/session")
 async def create_session(body: SessionRequest):
-    session_id = db.create_session(agent="test-agent", founder=body.founder)
+    session_id = db.create_session(agent="ceo", founder=body.founder)
     return {"session_id": session_id}
 
 
-async def _agent_reply(session_id: int, content: str) -> None:
-    """Background task: stream the agent's reply, then persist it."""
+async def _ceo_reply(session_id: int, founder: str, content: str) -> None:
+    """Background task: stream the CEO's reply, then persist the text of it."""
     queue = _get_or_create_queue(session_id)
     chunks: list[str] = []
     try:
-        async for chunk in agents.run_test_agent(content):
-            chunks.append(chunk)
-            await queue.put({"type": "text", "content": chunk, "timestamp": _now()})
+        async for kind, value in agents.run_ceo_turn(session_id, founder, content):
+            if kind == "text":
+                chunks.append(value)
+                await queue.put(
+                    {"type": "text", "content": value, "timestamp": _now()}
+                )
+            elif kind == "tool_call":
+                await queue.put(
+                    {"type": "tool_call", "content": value, "timestamp": _now()}
+                )
     except Exception as exc:
         await queue.put(
             {"type": "error", "content": f"agent error: {exc}", "timestamp": _now()}
@@ -93,7 +106,9 @@ async def post_message(body: MessageRequest):
     db.add_message(
         body.session_id, role="founder", founder=body.founder, content=body.content
     )
-    task = asyncio.create_task(_agent_reply(body.session_id, body.content))
+    task = asyncio.create_task(
+        _ceo_reply(body.session_id, body.founder, body.content)
+    )
     _background_tasks.add(task)
     task.add_done_callback(_background_tasks.discard)
     return {"ok": True}

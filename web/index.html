@@ -103,6 +103,13 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+  .tool-call {
+    align-self: flex-start;
+    color: #888;
+    font-style: italic;
+    font-size: 12px;
+    padding: 2px 4px;
+  }
 </style>
 </head>
 <body>
@@ -194,6 +201,12 @@
       const msg = JSON.parse(evt.data);
       if (msg.type === 'text') {
         appendToAgentBubble(msg.content);
+      } else if (msg.type === 'tool_call') {
+        const line = document.createElement('div');
+        line.className = 'tool-call';
+        line.textContent = '→ ' + msg.content;
+        chat.appendChild(line);
+        scrollToBottom();
       } else if (msg.type === 'error') {
         appendToAgentBubble('⚠ ' + msg.content);
       } else if (msg.type === 'done') {
