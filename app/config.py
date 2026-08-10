@@ -16,9 +16,18 @@ ALLOWED_PATHS = [REPO_ROOT, PRODUCT_REPO]
 # future agents per the cost-control section. One line to change.
 MODELS = {"ceo": "claude-opus-5", "default": "claude-sonnet-4-6"}
 
-# Per-agent tool allow-lists. CEO's full v1 set also includes Write (own memory
-# dirs, Step 4) and assign_task (Step 6); they are added at those steps.
-TOOLS = {"ceo": ["Read", "Glob", "Grep"]}
+# Per-agent tool allow-lists. CEO's full v1 set also includes assign_task
+# (added at Step 6). No Bash, no Edit — per the build package, permissions
+# are the enforcement layer, not instructions.
+TOOLS = {"ceo": ["Read", "Glob", "Grep", "Write"]}
+
+# Where the CEO may WRITE. Everything else — including the rest of this
+# repository — is read-only to it. Directories cover their whole subtree.
+CEO_WRITE_PATHS = [
+    COMPANY_DIR / "agents" / "ceo",   # its own memory (and the charter flag)
+    COMPANY_DIR / "sprint.md",
+    COMPANY_DIR / "backlog.md",
+]
 
 PLAYBOOK_WORD_CAP = 2000
 

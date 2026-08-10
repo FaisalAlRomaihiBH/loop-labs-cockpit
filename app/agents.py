@@ -130,6 +130,9 @@ async def _path_guard(
     """Allow a tool call only when its path argument resolves under an
     allowed root. This is the actual enforcement layer — tools=[...] only
     restricts which tools exist at all, not where they may look.
+
+    Reads may range across the allowed roots; writes are confined to the
+    agent's own memory files and the two company files it owns.
     """
     raw_path = (
         tool_input.get("file_path")
@@ -137,6 +140,14 @@ async def _path_guard(
         or str(config.REPO_ROOT)
     )
     resolved = Path(raw_path).resolve()
+
+    if tool_name == "Write":
+        for allowed in config.CEO_WRITE_PATHS:
+            if resolved == allowed or resolved.is_relative_to(allowed):
+                return PermissionResultAllow()
+        return PermissionResultDeny(
+            message=f"write outside the CEO's owned paths: {resolved}"
+        )
 
     for root in config.ALLOWED_PATHS:
         if resolved.is_relative_to(root):
@@ -220,6 +231,22 @@ async def run_ceo_turn(
                 usage.get("cache_creation_input_tokens"),
                 usage.get("cache_read_input_tokens"),
                 message.total_cost_usd,
+            )
+            _check_playbook_cap()
+
+
+def _check_playbook_cap() -> None:
+    """Flag the playbook when it exceeds its word cap. Until HR exists, the
+    CEO consolidates its own playbook when flagged and founders approve."""
+    playbook = config.COMPANY_DIR / "agents" / "ceo" / "playbook.md"
+    if playbook.exists():
+        words = len(playbook.read_text(encoding="utf-8").split())
+        if words > config.PLAYBOOK_WORD_CAP:
+            logger.warning(
+                "playbook.md is %s words — over the %s-word cap; "
+                "consolidation (with founder approval) is due",
+                words,
+                config.PLAYBOOK_WORD_CAP,
             )
 
 
