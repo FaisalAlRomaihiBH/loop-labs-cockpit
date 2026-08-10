@@ -117,8 +117,8 @@
 <header>
   <h1>Loop Labs Cockpit</h1>
   <div class="founder-select">
-    <label id="label-a"><input type="radio" name="founder" value="A" checked><span>Founder A</span></label>
-    <label id="label-b"><input type="radio" name="founder" value="B"><span>Founder B</span></label>
+    <label id="label-a"><input type="radio" name="founder" value="A" checked><span>Hasan</span></label>
+    <label id="label-b"><input type="radio" name="founder" value="B"><span>Faisal</span></label>
   </div>
 </header>
 
@@ -157,10 +157,12 @@
     chat.scrollTop = chat.scrollHeight;
   }
 
+  const FOUNDER_NAMES = { A: 'Hasan', B: 'Faisal' };
+
   function addFounderBubble(founder, text) {
     const bubble = document.createElement('div');
     bubble.className = 'bubble founder-msg';
-    bubble.innerHTML = '<span class="label">Founder ' + founder + '</span>';
+    bubble.innerHTML = '<span class="label">' + (FOUNDER_NAMES[founder] || founder) + '</span>';
     bubble.appendChild(document.createTextNode(text));
     chat.appendChild(bubble);
     scrollToBottom();

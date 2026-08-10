@@ -12,6 +12,10 @@ PRODUCT_REPO = LOOP_LABS_DIR / "carwash-app"                 # does not exist ye
 # root — only the two repositories are.
 ALLOWED_PATHS = [REPO_ROOT, PRODUCT_REPO]
 
+# Founder identities. A/B are the permanent identifiers (schema, message
+# tags); these are the actual people behind them.
+FOUNDERS = {"A": "Hasan", "B": "Faisal"}
+
 # Per-agent model. CEO gets the most capable tier; mid tier is the default for
 # future agents per the cost-control section. One line to change.
 MODELS = {"ceo": "claude-opus-5", "default": "claude-sonnet-4-6"}

@@ -94,7 +94,8 @@ def _read(path: Path) -> str:
 
 
 def _founder_label(founder: str) -> str:
-    return "Founder A" if founder == "A" else "Founder B"
+    name = config.FOUNDERS.get(founder, "")
+    return f"Founder {founder} — {name}" if name else f"Founder {founder}"
 
 
 def _system_prompt() -> str:
